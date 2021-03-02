@@ -1,0 +1,44 @@
+@model WebAdvert.Web.Models.Account.LoginModel
+
+<div class="row">
+  <div class="col-md-4">
+    <h4>Login using your email address and password</h4>
+    <h5>
+      <a asp-controller="Account" asp-action="SignUp">
+        If you are not a member you can sign up here
+      </a>
+    </h5>
+    <hr />
+    <form method="POST" asp-controller="Account" asp-action="Login">
+
+      <div asp-validation-summary="All" class="text-danger"></div>
+
+      <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control"/>
+        <span asp-validation-for="Email" class="text-danger"></span>
+      </div>
+
+      <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+      </div>
+
+      <div class="form-group">
+        <div class="checkbox">
+          <label asp-for="RememberMe"></label>
+          <input asp-for="RememberMe" class="form-control" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <a asp-controller="Account" asp-action="ForgotPassword">
+          I forgot my password
+        </a>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+  </div>
+</div>

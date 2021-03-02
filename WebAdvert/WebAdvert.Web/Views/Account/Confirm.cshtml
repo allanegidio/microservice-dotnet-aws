@@ -1,0 +1,24 @@
+@model WebAdvert.Web.Models.Account.ConfirmModel
+
+<div class="row">
+  <div class="col-md-4">
+    <form method="POST" asp-controller="Account" asp-action="Confirm">
+      
+      <div asp-validation-summary="All" class="text-danger"></div>
+
+      <div class="form-group" class="text-danger">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+      </div>
+
+      <div class="form-group" class="text-danger">
+        <label asp-for="Code"></label>
+        <input asp-for="Code" class="form-control" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+      </div>
+
+      <button type="Submit" class="btn btn-primary">Confirm</button>
+    </form>
+  </div>
+</div>
