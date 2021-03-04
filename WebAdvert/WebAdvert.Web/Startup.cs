@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebAdvert.Web.Clients;
+using WebAdvert.Web.Clients.Interfaces;
 using WebAdvert.Web.Services;
 using WebAdvert.Web.Services.Interfaces;
 
@@ -43,6 +45,8 @@ namespace WebAdvert.Web
             });
 
             services.AddTransient<IFileUploader, S3FileUploader>();
+            services.AddHttpClient<IAdvertApiClient, AdvertApiClient>();
+
             services.AddControllersWithViews();
         }
 
