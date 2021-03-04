@@ -57,5 +57,14 @@ namespace Advert.Api.Services
           }
       }
     }
+
+    public async Task<bool> CheckHealthAsync()
+    {
+      using (var client = new AmazonDynamoDBClient())
+      {
+        var table = await client.DescribeTableAsync("Advert");
+        return table.Table.TableStatus == "Active";
+      }
+    }
   }
 }
