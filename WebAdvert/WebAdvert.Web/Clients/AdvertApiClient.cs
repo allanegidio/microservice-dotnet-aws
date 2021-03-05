@@ -1,8 +1,10 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Advert.Models;
+using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using WebAdvert.Web.Clients.Interfaces;
 using WebAdvert.Web.Clients.Requests;
@@ -13,27 +15,41 @@ namespace WebAdvert.Web.Clients
   {
     private readonly IConfiguration _configuration;
     private readonly HttpClient _client;
+    private readonly IMapper _mapper;
 
-    public AdvertApiClient(IConfiguration configuration, HttpClient client)
+    public AdvertApiClient(IConfiguration configuration, HttpClient client, IMapper mapper)
     {
       _configuration = configuration;
       _client = client;
+      _mapper = mapper;
+      var baseUrl = _configuration.GetSection("AdvertApi").GetValue<string>("BaseUrl");
 
-      var createUrl = _configuration.GetSection("AdvertApi").GetValue<string>("CreateUrl");
-
-      _client.BaseAddress = new Uri(createUrl);
+      _client.BaseAddress = new Uri(baseUrl);
       _client.DefaultRequestHeaders.Add("Content-type", "application/json");
     }
-    public async Task<CreateAdvertResponse> Create(CreateAdvertRequest model)
-    {
-        var advertApiRequest = new CreateAdvertRequest();
-        var jsonModel = JsonSerializer.Serialize<CreateAdvertRequest>(advertApiRequest);
-        var response = await _client.PostAsync(_client.BaseAddress, new StringContent(jsonModel));
-        var responseJson = await response.Content.ReadAsStringAsync();
-        var createAdvertResponse = JsonSerializer.Deserialize<CreateAdvertResponse>(responseJson);
-        var advertResponse = new CreateAdvertResponse();
 
-        return advertResponse;
+    public async Task<WebAdvert.Web.Clients.Responses.CreateAdvertResponse> CreateAsync(CreateAdvertRequest request)
+    {
+      var advertApiModel = _mapper.Map<AdvertModel>(request);
+      var jsonModel = JsonSerializer.Serialize<AdvertModel>(advertApiModel);
+      var response = await _client.PostAsync(new Uri($"{_client.BaseAddress}/create"), new StringContent(jsonModel));
+      var responseJson = await response.Content.ReadAsStringAsync();
+      var createAdvertResponse = JsonSerializer.Deserialize<CreateAdvertResponse>(responseJson);
+      var advertResponse = _mapper.Map<WebAdvert.Web.Clients.Responses.CreateAdvertResponse>(createAdvertResponse);
+
+      return advertResponse;
     }
+
+    public async Task<bool> ConfirmAsync(ConfirmAdvertRequest request)
+    {
+      var advertModel = _mapper.Map<ConfirmAdvertModel>(request);
+      var jsonModel = JsonSerializer.Serialize(advertModel);
+      var response = await _client.PutAsync(new Uri($"{_client.BaseAddress}/confirm"), new StringContent(jsonModel));
+      var responseJson = await response.Content.ReadAsStringAsync();
+
+      return response.StatusCode == HttpStatusCode.OK;
+    }
+
+
   }
 }

@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
-using Advert.Models;
 using WebAdvert.Web.Clients.Requests;
+using WebAdvert.Web.Clients.Responses;
 
 namespace WebAdvert.Web.Clients.Interfaces
 {
     public interface IAdvertApiClient
     {
-         Task<CreateAdvertResponse> Create(CreateAdvertRequest model);
+         Task<CreateAdvertResponse> CreateAsync(CreateAdvertRequest request);
+         Task<bool> ConfirmAsync(ConfirmAdvertRequest request);
     }
 }
