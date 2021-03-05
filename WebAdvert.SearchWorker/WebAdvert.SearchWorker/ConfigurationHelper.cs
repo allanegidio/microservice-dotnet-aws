@@ -1,18 +1,24 @@
+using System.IO;
+using Microsoft.Extensions.Configuration;
+
 namespace WebAdvert.SearchWorker
 {
-    public static class ConfigurationHelper
+  public static class ConfigurationHelper
+  {
+    private static IConfiguration _configuration = null;
+    public static IConfiguration Instance
     {
-      private static IConfiguration _configuration = null;
-      public static IConfiguration Instance {
-      get 
+      get
       {
-        if(_configuration == null)
+        if (_configuration == null)
         {
-          _configuration = new ConfigurationHelper()
+          _configuration = new ConfigurationBuilder()
                                 .SetBasePath(Directory.GetCurrentDirectory())
                                 .AddJsonFile("appsetting.json")
                                 .Build();
         }
+
+        return _configuration;
       }
     }
   }

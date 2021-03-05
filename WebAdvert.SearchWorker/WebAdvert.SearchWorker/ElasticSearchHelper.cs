@@ -15,7 +15,9 @@ namespace WebAdvert.SearchWorker
         var url = configuration.GetSection("ES")
                                         .GetValue<string>("Url");
 
-        var settings = new ConnectionSettings(new Uri(url)).DefaultIndex("adverts");
+        var settings = new ConnectionSettings(new Uri(url))
+                                      .DefaultIndex("adverts")
+                                      .DefaultMappingFor<AdvertType>(elasticModel => elasticModel.IdProperty(advertType => advertType.Id));
       }
 
       return _client;
