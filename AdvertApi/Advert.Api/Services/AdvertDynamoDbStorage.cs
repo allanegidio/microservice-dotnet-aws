@@ -25,7 +25,7 @@ namespace Advert.Api.Services
       dbModel.Creation = DateTime.UtcNow;
       dbModel.Status = AdvertStatus.Peding;
 
-      using (var client = new AmazonDynamoDBClient()) 
+      using (var client = new AmazonDynamoDBClient())
       {
         using (var context = new DynamoDBContext(client))
         {
@@ -40,21 +40,21 @@ namespace Advert.Api.Services
     {
       using (var client = new AmazonDynamoDBClient())
       {
-          using (var context = new DynamoDBContext(client))
+        using (var context = new DynamoDBContext(client))
+        {
+          var record = await context.LoadAsync<AdvertDbModel>(model.Id);
+
+          if (record == null) throw new KeyNotFoundException($"A record with ID={model.Id} was not found.");
+          if (model.Status == AdvertStatus.Active)
           {
-              var record = await context.LoadAsync<AdvertDbModel>(model.Id);
-              
-              if (record == null) throw new KeyNotFoundException($"A record with ID={model.Id} was not found.");
-              if (model.Status == AdvertStatus.Active)
-              {
-                  record.Status = AdvertStatus.Active;
-                  await context.SaveAsync(record);
-              }
-              else
-              {
-                  await context.DeleteAsync(record);
-              }
+            record.Status = AdvertStatus.Active;
+            await context.SaveAsync(record);
           }
+          else
+          {
+            await context.DeleteAsync(record);
+          }
+        }
       }
     }
 
@@ -64,6 +64,22 @@ namespace Advert.Api.Services
       {
         var table = await client.DescribeTableAsync("Advert");
         return table.Table.TableStatus == "Active";
+      }
+    }
+
+    public async Task<AdvertModel> GetByIdAsync(string id)
+    {
+      using (var client = new AmazonDynamoDBClient())
+      {
+        using (var context = new DynamoDBContext(client))
+        {
+          var dbModel = await context.LoadAsync<AdvertDbModel>(id);
+
+          if (dbModel == null)
+            throw new KeyNotFoundException();
+
+          return _mapper.Map<AdvertModel>(dbModel);
+        }
       }
     }
   }
