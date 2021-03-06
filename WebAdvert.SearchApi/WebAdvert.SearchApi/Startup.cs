@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using WebAdvert.SearchApi.Extensions;
+using WebAdvert.SearchApi.Services;
+using WebAdvert.SearchApi.Services.Interfaces;
 
 namespace WebAdvert.SearchApi
 {
@@ -26,7 +29,8 @@ namespace WebAdvert.SearchApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddElasticSearch(Configuration);
+            services.AddTransient<ISearchService, SearchService>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
