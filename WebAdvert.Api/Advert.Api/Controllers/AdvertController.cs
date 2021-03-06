@@ -6,6 +6,7 @@ using Advert.Api.Services;
 using Advert.Models;
 using Advert.Models.Messages;
 using Amazon.SimpleNotificationService;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
@@ -72,17 +73,26 @@ namespace Advert.Api.Controllers
       return new OkResult();
     }
 
+    [HttpGet]
+    [Route("GetAll")]
+    [ProducesResponseType(200)]
+    [EnableCors("AllOrigin")]
+    public async Task<IActionResult> GetAll()
+    {
+      return new JsonResult(await _advertStorageService.GetAllAsync());
+    }
+
     private async Task RaiseAdvertConfirmedMessage(ConfirmAdvertModel model)
     {
       var topicArn = _configuration.GetValue<string>("TopicArn");
       var dbModel = await _advertStorageService.GetByIdAsync(model.Id);
+
       using (var client = new AmazonSimpleNotificationServiceClient())
       {
         var message = new AdvertConfirmedMessage { Id = model.Id, Title = dbModel.Title };
         var messageJson = JsonSerializer.Serialize(message);
         await client.PublishAsync(topicArn, messageJson);
       }
-
     }
   }
 }

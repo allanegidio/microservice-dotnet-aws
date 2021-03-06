@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Advert.Api.Entities;
 using Advert.Models;
@@ -79,6 +80,19 @@ namespace Advert.Api.Services
             throw new KeyNotFoundException();
 
           return _mapper.Map<AdvertModel>(dbModel);
+        }
+      }
+    }
+
+    public async Task<List<AdvertModel>> GetAllAsync()
+    {
+      using (var client = new AmazonDynamoDBClient())
+      {
+        using (var context = new DynamoDBContext(client))
+        {
+          // Don't use Scan in production. It's a demo project
+          var scanResult = await context.ScanAsync<AdvertDbModel>(new List<ScanCondition>()).GetNextSetAsync();
+          return scanResult.Select(item => _mapper.Map<AdvertModel>(item)).ToList();
         }
       }
     }
