@@ -39,7 +39,7 @@ namespace WebAdvert.SearchApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -47,6 +47,10 @@ namespace WebAdvert.SearchApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAdvert.SearchApi v1"));
             }
+
+            loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection(), formatter: (logLevel, loggerMessage, exception) => {
+                return $"[{DateTime.Now} {logLevel} {loggerMessage} {exception?.Message} {exception?.StackTrace}";
+            });
 
             app.UseHttpsRedirection();
 
