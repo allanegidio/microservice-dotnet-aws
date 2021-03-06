@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Elasticsearch.Net;
 using Nest;
 using WebAdvert.SearchApi.Models;
 using WebAdvert.SearchApi.Services.Interfaces;
@@ -13,6 +14,12 @@ namespace WebAdvert.SearchApi.Services
     public SearchService(IElasticClient client)
     {
       _client = client;
+    }
+
+    public async Task<bool> CheckHealthAsync()
+    {
+      var result = await _client.Cluster.HealthAsync();
+      return result.Status == Health.Green ? true : false;
     }
 
     public async Task<List<AdvertType>> Search(string keyword)

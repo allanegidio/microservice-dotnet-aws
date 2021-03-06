@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using WebAdvert.SearchApi.Extensions;
+using WebAdvert.SearchApi.HealthChecks;
 using WebAdvert.SearchApi.Services;
 using WebAdvert.SearchApi.Services.Interfaces;
 
@@ -36,6 +37,7 @@ namespace WebAdvert.SearchApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAdvert.SearchApi", Version = "v1" });
             });
+            services.AddHealthChecks().AddCheck<SearchHealthCheck>("Search");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,6 +64,8 @@ namespace WebAdvert.SearchApi
             {
                 endpoints.MapControllers();
             });
+
+            app.UseHealthChecks("/Health");
         }
     }
 }
