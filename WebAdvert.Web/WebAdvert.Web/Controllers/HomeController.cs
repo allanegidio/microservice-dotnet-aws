@@ -27,9 +27,13 @@ namespace WebAdvert.Web.Controllers
     }
 
     [Authorize]
-    public IActionResult Index()
+    [ResponseCache(Duration = 60)]
+    public async Task<IActionResult> Index()
     {
-      return View();
+      var allAds = await _apiClient.GetAllAsync().ConfigureAwait(false);
+      var allViewModels = allAds.Select(x => _mapper.Map<IndexViewModel>(x));
+
+      return View(allViewModels);
     }
 
     public IActionResult Privacy()
@@ -49,7 +53,7 @@ namespace WebAdvert.Web.Controllers
       var viewModel = new List<SearchViewModel>();
 
       var searchResult = await _searchApiClient.Search(keyword);
-      
+
       searchResult.ForEach(advertDoc =>
       {
         var viewModelItem = _mapper.Map<SearchViewModel>(advertDoc);
