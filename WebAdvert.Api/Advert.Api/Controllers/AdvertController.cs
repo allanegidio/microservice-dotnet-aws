@@ -94,5 +94,26 @@ namespace Advert.Api.Controllers
         await client.PublishAsync(topicArn, messageJson);
       }
     }
+
+    [HttpGet]
+    [Route("{id}")]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(200)]
+    public async Task<IActionResult> GetById(string id)
+    {
+      try
+      {
+        var advert = await _advertStorageService.GetByIdAsync(id);
+        return new JsonResult(advert);
+      }
+      catch (KeyNotFoundException)
+      {
+        return new NotFoundResult();
+      }
+      catch (Exception)
+      {
+        return new StatusCodeResult(500);
+      }
+    }
   }
 }
