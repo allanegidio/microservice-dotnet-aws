@@ -1,17 +1,22 @@
-@using Microsoft.AspNetCore.Mvc.ViewFeatures
-@model IEnumerable<WebAdvert.Web.Models.Home.SearchViewModel>
+  
+@model WebAdvert.Web.Models.Home.IndexViewModel
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration configuration
 
-<div class="row">
-    <div class="col-md-10">
-        @foreach (var item in Model)
-        {
-            <div class="border rounded border-info p-1 w-100">
-                <img src="http://www.iconninja.com/files/180/701/315/search-results-icon.png"
-                     style="width: 24px;height: 24px;" />
-                <a class="btn-link boxClick" href="#" data-id="@item.Id"> @item.Title</a>
-            </div>
+@{
+    var advertImageUrl = configuration.GetValue<string>("ImageBaseUrl");
+}
+
+<div class="card">
+    <a href="#" class="boxClick" data-id="@Model.Id">
+        @{
+            var defaultImageUrl = "https://camblycontent.files.wordpress.com/2017/02/advertising-word-block.jpg";
+            var imageUrl = string.IsNullOrEmpty(Model.Image) ? defaultImageUrl :
+                $"{advertImageUrl}/{Model.Image}";
         }
-    </div>
+        <img src="@imageUrl" alt="Avatar" style="width:100%">
+        <div class="container">
+            <p>@Model.Title</p>
+        </div>
+    </a>
 </div>
-
-@Html.Partial("AdvertDetail")

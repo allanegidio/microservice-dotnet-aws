@@ -46,7 +46,7 @@ namespace Advert.Api.Controllers
         throw;
       }
 
-      return StatusCode(2001, new CreateAdvertResponse { Id = recordId });
+      return StatusCode(201, new CreateAdvertResponse { Id = recordId });
     }
 
     [HttpPut]

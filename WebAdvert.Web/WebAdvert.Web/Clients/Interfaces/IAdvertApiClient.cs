@@ -11,5 +11,6 @@ namespace WebAdvert.Web.Clients.Interfaces
          Task<CreateAdvertResponse> CreateAsync(CreateAdvertRequest request);
          Task<bool> ConfirmAsync(ConfirmAdvertRequest request);
          Task<List<Advertisement>> GetAllAsync();
+         Task<Advertisement> GetByIdAsync(string advertId);
     }
 }
