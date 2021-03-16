@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Advert.Models;
+using Amazon.ServiceDiscovery;
+using Amazon.ServiceDiscovery.Model;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using WebAdvert.Web.Clients.Interfaces;
@@ -16,17 +18,31 @@ namespace WebAdvert.Web.Clients
 {
   public class AdvertApiClient : IAdvertApiClient
   {
-    private readonly IConfiguration _configuration;
     private readonly HttpClient _client;
     private readonly IMapper _mapper;
     private readonly string _baseAddress;
 
     public AdvertApiClient(IConfiguration configuration, HttpClient client, IMapper mapper)
     {
-      _configuration = configuration;
       _client = client;
       _mapper = mapper;
-      _baseAddress = _configuration.GetSection("AdvertApi").GetValue<string>("BaseUrl");
+
+      var discoveryClient = new AmazonServiceDiscoveryClient();
+      var discoveryTask = discoveryClient.DiscoverInstancesAsync(new DiscoverInstancesRequest()
+      {
+        ServiceName = "AdvertAPI",
+        NamespaceName = "WebAdvertisement",
+
+      });
+
+      discoveryTask.GetAwaiter();
+
+      var instances = discoveryTask.Result.Instances;
+      var ipv4 = instances[0].Attributes["AWS_INSTANCE_IPV4"];
+      var port = instances[0].Attributes["AWS_INSTANCE_PORT"];
+
+
+      _baseAddress = configuration.GetSection("AdvertApi").GetValue<string>("BaseUrl");
     }
 
     public async Task<WebAdvert.Web.Clients.Responses.CreateAdvertResponse> CreateAsync(CreateAdvertRequest request)
